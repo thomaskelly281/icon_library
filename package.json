@@ -1,6 +1,7 @@
 {
   "name": "blok-icons-workspace",
   "private": true,
+  "packageManager": "pnpm@10.19.0",
   "scripts": {
     "generate": "tsx scripts/generate-icons.ts",
     "generate:force": "tsx scripts/generate-icons.ts --force",
@@ -8,6 +9,7 @@
     "pack:icons": "pnpm icons:build && pnpm --filter @blok/icons pack --pack-destination dist-packages",
     "dev": "tsx scripts/ensure-icons-built.ts && pnpm --filter app dev",
     "build": "tsx scripts/ensure-icons-built.ts && pnpm --filter app build",
+    "vercel-build": "tsx scripts/ensure-icons-built.ts && pnpm --filter app build && tsx scripts/sync-next-output.ts",
     "start": "pnpm --filter app start",
     "lint": "pnpm --filter app lint",
     "typecheck": "pnpm --filter app typecheck"
