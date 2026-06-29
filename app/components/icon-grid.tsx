@@ -1,61 +1,70 @@
 "use client";
 
-import { useMemo, useState, useRef, useCallback } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { IconPreview } from "./icon-preview";
-import { IconDetailDialog } from "./icon-detail-dialog";
-import { BlokTopbar } from "./blok-topbar";
-import { Button } from "@/components/ui/button";
-import { buildPackageInstallCommand } from "@/lib/install-url";
-import type { IconManifest, IconManifestEntry, IconOrigin } from "@/lib/types";
+import { useMemo, useRef, useState } from "react";
+
+import { IconDetailDialog } from "@/components/icon-detail-dialog";
+import { IconPreview } from "@/components/icon-preview";
+import type { IconFilter } from "@/components/icons-toolbar";
+import type { IconManifest, IconManifestEntry } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 const COLUMN_COUNT = 6;
-const ROW_HEIGHT = 128;
-
-type OriginFilter = "all" | IconOrigin;
+const ROW_ESTIMATE = 88;
 
 interface IconGridProps {
   manifest: IconManifest;
+  query: string;
+  filter: IconFilter;
 }
 
-export function IconGrid({ manifest }: IconGridProps) {
-  const [query, setQuery] = useState("");
-  const [origin, setOrigin] = useState<OriginFilter>("all");
-  const [selectedIcon, setSelectedIcon] = useState<IconManifestEntry | null>(null);
+function filterIcons(
+  icons: IconManifestEntry[],
+  query: string,
+  filter: IconFilter,
+) {
+  const normalized = query.trim().toLowerCase();
+
+  return icons.filter((icon) => {
+    if (filter === "mdi" && icon.origin !== "mdi") {
+      return false;
+    }
+
+    if (filter === "custom" && icon.origin !== "svg") {
+      return false;
+    }
+
+    if (!normalized) {
+      return true;
+    }
+
+    return (
+      icon.slug.includes(normalized) ||
+      icon.component.toLowerCase().includes(normalized)
+    );
+  });
+}
+
+export function IconGrid({ manifest, query, filter }: IconGridProps) {
+  const [selectedIcon, setSelectedIcon] = useState<IconManifestEntry | null>(
+    null,
+  );
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [copiedInstall, setCopiedInstall] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
-  const packageInstallCommand = buildPackageInstallCommand("pnpm");
 
-  const copyPackageInstall = useCallback(async () => {
-    await navigator.clipboard.writeText(packageInstallCommand);
-    setCopiedInstall(true);
-    window.setTimeout(() => setCopiedInstall(false), 2000);
-  }, [packageInstallCommand]);
-
-  const filtered = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    return manifest.icons.filter((icon) => {
-      if (origin !== "all" && icon.origin !== origin) {
-        return false;
-      }
-      if (!normalized) {
-        return true;
-      }
-      return (
-        icon.slug.includes(normalized) ||
-        icon.component.toLowerCase().includes(normalized)
-      );
-    });
-  }, [manifest.icons, origin, query]);
+  const filtered = useMemo(
+    () => filterIcons(manifest.icons, query, filter),
+    [manifest.icons, query, filter],
+  );
 
   const rowCount = Math.ceil(filtered.length / COLUMN_COUNT);
 
   const rowVirtualizer = useVirtualizer({
     count: rowCount,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => ROW_HEIGHT,
+    estimateSize: () => ROW_ESTIMATE,
     overscan: 8,
+    measureElement: (element) => element.getBoundingClientRect().height,
   });
 
   const openIcon = (icon: IconManifestEntry) => {
@@ -63,93 +72,61 @@ export function IconGrid({ manifest }: IconGridProps) {
     setDialogOpen(true);
   };
 
+  if (filtered.length === 0) {
+    return (
+      <p className="py-12 text-center text-sm text-muted-foreground">
+        No icons match your search.
+      </p>
+    );
+  }
+
   return (
     <>
-      <BlokTopbar searchQuery={query} onSearchQueryChange={setQuery} />
-      <div className="flex h-screen flex-col pt-12">
-        <header className="border-b border-border bg-background px-6 py-4">
-          <div className="mx-auto flex max-w-7xl flex-col gap-4">
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight">Icons</h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {manifest.icons.length.toLocaleString()} icons · flat imports like{" "}
-                <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
-                  @sitecore/icons/account
-                </code>
-              </p>
-              <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
-                <code className="overflow-x-auto rounded-lg border bg-muted/40 px-3 py-2 font-mono text-xs">
-                  {packageInstallCommand}
-                </code>
-                <Button type="button" variant="outline" size="sm" onClick={() => void copyPackageInstall()}>
-                  {copiedInstall ? "Copied" : "Copy install command"}
-                </Button>
-              </div>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex gap-2">
-                {(["all", "mdi", "svg"] as const).map((value) => (
+      <div
+        ref={parentRef}
+        className="max-h-[calc(100svh-20rem)] overflow-auto"
+      >
+        <div
+          className="relative w-full"
+          style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
+        >
+          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+            const startIndex = virtualRow.index * COLUMN_COUNT;
+            const rowIcons = filtered.slice(
+              startIndex,
+              startIndex + COLUMN_COUNT,
+            );
+
+            return (
+              <div
+                key={virtualRow.key}
+                data-index={virtualRow.index}
+                ref={rowVirtualizer.measureElement}
+                className="absolute left-0 top-0 grid w-full grid-cols-2 gap-3 pb-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+                style={{
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+              >
+                {rowIcons.map((icon) => (
                   <button
-                    key={value}
+                    key={icon.slug}
                     type="button"
-                    onClick={() => setOrigin(value)}
-                    className={`rounded-full px-3 py-1.5 text-sm capitalize ${
-                      origin === value
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
-                    }`}
+                    onClick={() => openIcon(icon)}
+                    title={`View ${icon.slug}`}
+                    className={cn(
+                      "flex w-full flex-col items-center gap-2 rounded-[8px] border border-border bg-body-bg p-3 text-center",
+                      "transition-colors hover:bg-subtle-bg",
+                    )}
                   >
-                    {value === "all" ? "All" : value === "mdi" ? "MDI seed" : "Contributed"}
+                    <IconPreview path={icon.path} size={28} />
+                    <span className="w-full truncate font-mono text-xs font-medium">
+                      {icon.slug}
+                    </span>
                   </button>
                 ))}
               </div>
-              <p className="text-sm text-muted-foreground">
-                Showing {filtered.length.toLocaleString()} result
-                {filtered.length === 1 ? "" : "s"}
-              </p>
-            </div>
-          </div>
-        </header>
-
-        <div ref={parentRef} className="flex-1 overflow-auto px-6 py-6">
-          <div
-            className="relative mx-auto max-w-7xl"
-            style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
-          >
-            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const startIndex = virtualRow.index * COLUMN_COUNT;
-              const rowIcons = filtered.slice(startIndex, startIndex + COLUMN_COUNT);
-
-              return (
-                <div
-                  key={virtualRow.key}
-                  className="absolute left-0 top-0 grid w-full grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6"
-                  style={{
-                    height: `${virtualRow.size}px`,
-                    transform: `translateY(${virtualRow.start}px)`,
-                  }}
-                >
-                  {rowIcons.map((icon) => (
-                    <button
-                      key={icon.slug}
-                      type="button"
-                      onClick={() => openIcon(icon)}
-                      className="flex h-[116px] flex-col items-center justify-center rounded-xl border border-border bg-card p-3 text-center transition hover:border-foreground/20 hover:shadow-sm"
-                      title={`View ${icon.slug}`}
-                    >
-                      <IconPreview path={icon.path} size={28} className="text-foreground" />
-                      <span className="mt-3 w-full truncate font-mono text-xs font-medium text-foreground">
-                        {icon.slug}
-                      </span>
-                      <span className="mt-1 w-full truncate text-[11px] text-muted-foreground">
-                        {icon.component}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              );
-            })}
-          </div>
+            );
+          })}
         </div>
       </div>
 

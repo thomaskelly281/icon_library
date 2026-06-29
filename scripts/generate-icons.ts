@@ -10,6 +10,7 @@ const ROOT = path.resolve(__dirname, "..");
 const ICONS_DIR = path.join(ROOT, "icons");
 const SVG_DIR = ICONS_DIR;
 const MANIFEST_PATH = path.join(ICONS_DIR, "manifest.json");
+const APP_MANIFEST_PATH = path.join(ROOT, "app", "icons", "manifest.json");
 const PACKAGE_SRC = path.join(ROOT, "packages", "icons", "src");
 const CACHE_DIR = path.join(ROOT, ".cache");
 const CACHE_PATH = path.join(CACHE_DIR, "icons-cache.json");
@@ -329,6 +330,15 @@ function writeManifest(icons: Map<string, IconManifestEntry>): boolean {
   fs.mkdirSync(ICONS_DIR, { recursive: true });
   if (!fs.existsSync(MANIFEST_PATH) || fs.readFileSync(MANIFEST_PATH, "utf8") !== serialized) {
     fs.writeFileSync(MANIFEST_PATH, serialized, "utf8");
+    changed = true;
+  }
+
+  fs.mkdirSync(path.dirname(APP_MANIFEST_PATH), { recursive: true });
+  if (
+    !fs.existsSync(APP_MANIFEST_PATH) ||
+    fs.readFileSync(APP_MANIFEST_PATH, "utf8") !== serialized
+  ) {
+    fs.writeFileSync(APP_MANIFEST_PATH, serialized, "utf8");
     changed = true;
   }
 

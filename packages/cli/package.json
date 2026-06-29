@@ -1,11 +1,11 @@
 {
-  "name": "@sitecore/icons-cli",
+  "name": "@blok/icons-cli",
   "version": "0.1.0",
-  "description": "CLI for adding Sitecore icons to your project",
+  "description": "CLI for adding Blok icons to your project",
   "license": "MIT",
   "type": "module",
   "bin": {
-    "sitecore-icons": "./dist/index.js"
+    "blok-icons": "./dist/index.js"
   },
   "files": ["dist"],
   "scripts": {

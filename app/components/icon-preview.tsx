@@ -1,30 +1,23 @@
-import type { CSSProperties } from "react";
-import Icon from "@mdi/react";
+import { Icon } from "@/lib/icon";
+import { cn } from "@/lib/utils";
 
 export interface IconPreviewProps {
   path: string;
   size?: number;
   className?: string;
-  style?: CSSProperties;
-}
-
-function toMdiSize(size: number | string): number | string {
-  return typeof size === "number" ? `${size}px` : size;
 }
 
 export function IconPreview({
   path,
   size = 24,
   className,
-  style,
 }: IconPreviewProps) {
   return (
     <Icon
       path={path}
-      size={toMdiSize(size)}
-      color="currentColor"
-      className={className}
-      style={style}
+      size={size / 24}
+      className={cn("size-7 max-h-7 max-w-7 shrink-0 text-foreground", className)}
+      aria-hidden="true"
     />
   );
 }

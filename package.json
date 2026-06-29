@@ -1,20 +1,21 @@
 {
-  "name": "sitecore-icons-workspace",
+  "name": "blok-icons-workspace",
   "private": true,
+  "packageManager": "pnpm@10.19.0",
   "scripts": {
     "generate": "tsx scripts/generate-icons.ts",
     "generate:force": "tsx scripts/generate-icons.ts --force",
     "icons:build": "tsx scripts/ensure-icons-built.ts",
-    "pack:icons": "pnpm icons:build && pnpm --filter @sitecore/icons pack --pack-destination dist-packages",
-    "dev": "tsx scripts/ensure-icons-built.ts && next dev",
-    "build": "tsx scripts/copy-package-for-deploy.ts && pnpm --filter @sitecore/icons-cli build && next build",
-    "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "pack:icons": "pnpm icons:build && pnpm --filter @blok/icons pack --pack-destination dist-packages",
+    "dev": "tsx scripts/ensure-icons-built.ts && pnpm --filter app dev",
+    "build": "tsx scripts/ensure-icons-built.ts && pnpm --filter app build",
+    "start": "pnpm --filter app start",
+    "lint": "pnpm --filter app lint",
+    "typecheck": "pnpm --filter app typecheck"
   },
   "dependencies": {
     "@mdi/react": "^1.6.1",
-    "@sitecore/icons": "workspace:*",
+    "@blok/icons": "workspace:*",
     "@tanstack/react-virtual": "^3.13.12",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
