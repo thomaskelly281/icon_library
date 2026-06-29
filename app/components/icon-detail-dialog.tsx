@@ -1,16 +1,18 @@
 "use client";
 
+import { mdiDownload } from "@mdi/js";
 import { useCallback, useState } from "react";
-import { DownloadIcon } from "lucide-react";
 import { IconPreview } from "@/app/components/icon-preview";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Icon } from "@/lib/icon";
 import {
   buildImportSnippet,
   buildUsageSnippet,
@@ -57,9 +59,9 @@ export function IconDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-lg">
-        <DialogHeader className="border-b px-6 py-5">
-          <DialogTitle className="font-mono text-lg">{icon.slug}</DialogTitle>
+      <DialogContent size="lg" className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="font-mono">{icon.slug}</DialogTitle>
           <DialogDescription>
             Import as <span className="font-medium text-foreground">{icon.component}</span>
             {" · "}
@@ -67,30 +69,38 @@ export function IconDetailDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-6 px-6 py-6">
-          <div className="flex items-center justify-center rounded-xl border bg-muted/30 px-8 py-10">
+        <div className="flex flex-col gap-6">
+          <div className="flex items-center justify-center rounded-xl bg-muted/30 px-8 py-10">
             <IconPreview path={icon.path} size={64} className="size-16 text-foreground" />
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-medium">Import</p>
-              <Button type="button" variant="outline" size="sm" onClick={handleCopy}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                colorScheme="neutral"
+                onClick={handleCopy}
+              >
                 {copied ? "Copied" : "Copy snippet"}
               </Button>
             </div>
-            <pre className="overflow-x-auto rounded-lg border bg-muted/40 p-4 font-mono text-xs leading-relaxed text-foreground">
+            <pre className="overflow-x-auto rounded-lg bg-muted/40 p-4 font-mono text-xs leading-relaxed text-foreground">
               <code>{importSnippet}</code>
               {"\n\n"}
               <code>{`<${icon.component} size={24} />`}</code>
             </pre>
           </div>
+        </div>
 
-          <Button type="button" onClick={handleDownload} className="w-full">
-            <DownloadIcon />
+        <DialogFooter>
+          <Button type="button" onClick={handleDownload} className="w-full sm:w-auto">
+            <Icon path={mdiDownload} />
             Download SVG
           </Button>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

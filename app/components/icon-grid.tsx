@@ -4,6 +4,7 @@ import { useMemo, useState, useRef, useCallback } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { IconPreview } from "./icon-preview";
 import { IconDetailDialog } from "./icon-detail-dialog";
+import { BlokTopbar } from "./blok-topbar";
 import { Button } from "@/components/ui/button";
 import { buildPackageInstallCommand } from "@/lib/install-url";
 import type { IconManifest, IconManifestEntry, IconOrigin } from "@/lib/types";
@@ -64,11 +65,12 @@ export function IconGrid({ manifest }: IconGridProps) {
 
   return (
     <>
-      <div className="flex h-screen flex-col">
-        <header className="sticky top-0 z-10 border-b border-border bg-background/95 px-6 py-4 backdrop-blur">
+      <BlokTopbar searchQuery={query} onSearchQueryChange={setQuery} />
+      <div className="flex h-screen flex-col pt-12">
+        <header className="border-b border-border bg-background px-6 py-4">
           <div className="mx-auto flex max-w-7xl flex-col gap-4">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight">Sitecore Icons</h1>
+              <h1 className="text-2xl font-semibold tracking-tight">Icons</h1>
               <p className="mt-1 text-sm text-muted-foreground">
                 {manifest.icons.length.toLocaleString()} icons · flat imports like{" "}
                 <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
@@ -84,14 +86,7 @@ export function IconGrid({ manifest }: IconGridProps) {
                 </Button>
               </div>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <input
-                type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search icons..."
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none ring-ring focus:ring-2 sm:max-w-md"
-              />
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex gap-2">
                 {(["all", "mdi", "svg"] as const).map((value) => (
                   <button
@@ -108,11 +103,11 @@ export function IconGrid({ manifest }: IconGridProps) {
                   </button>
                 ))}
               </div>
+              <p className="text-sm text-muted-foreground">
+                Showing {filtered.length.toLocaleString()} result
+                {filtered.length === 1 ? "" : "s"}
+              </p>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Showing {filtered.length.toLocaleString()} result
-              {filtered.length === 1 ? "" : "s"}
-            </p>
           </div>
         </header>
 

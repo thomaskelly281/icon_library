@@ -11,7 +11,7 @@ const PUBLIC_TARBALL = path.join(PUBLIC_DIR, "sitecore-icons.tgz");
 
 export function copyPackageTarballForDeploy(): void {
   execSync("pnpm icons:build", { cwd: ROOT, stdio: "inherit" });
-  execSync("pnpm --filter @sitecore/icons pack --pack-destination ../../dist-packages", {
+  execSync(`pnpm --filter @sitecore/icons pack --pack-destination "${DIST_PACKAGES}"`, {
     cwd: ROOT,
     stdio: "inherit",
   });
