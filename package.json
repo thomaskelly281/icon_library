@@ -7,7 +7,7 @@
     "icons:build": "tsx scripts/ensure-icons-built.ts",
     "pack:icons": "pnpm icons:build && pnpm --filter @sitecore/icons pack --pack-destination ../../dist-packages",
     "dev": "tsx scripts/ensure-icons-built.ts && next dev",
-    "build": "tsx scripts/ensure-icons-built.ts && pnpm --filter @sitecore/icons-cli build && next build",
+    "build": "tsx scripts/copy-package-for-deploy.ts && pnpm --filter @sitecore/icons-cli build && next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"

@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState, useRef } from "react";
+import { useMemo, useState, useRef, useCallback } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { IconPreview } from "./icon-preview";
 import { IconDetailDialog } from "./icon-detail-dialog";
+import { Button } from "@/components/ui/button";
+import { buildPackageInstallCommand } from "@/lib/install-url";
 import type { IconManifest, IconManifestEntry, IconOrigin } from "@/lib/types";
 
 const COLUMN_COUNT = 6;
@@ -20,7 +22,15 @@ export function IconGrid({ manifest }: IconGridProps) {
   const [origin, setOrigin] = useState<OriginFilter>("all");
   const [selectedIcon, setSelectedIcon] = useState<IconManifestEntry | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [copiedInstall, setCopiedInstall] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
+  const packageInstallCommand = buildPackageInstallCommand("pnpm");
+
+  const copyPackageInstall = useCallback(async () => {
+    await navigator.clipboard.writeText(packageInstallCommand);
+    setCopiedInstall(true);
+    window.setTimeout(() => setCopiedInstall(false), 2000);
+  }, [packageInstallCommand]);
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -65,6 +75,14 @@ export function IconGrid({ manifest }: IconGridProps) {
                   @sitecore/icons/account
                 </code>
               </p>
+              <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+                <code className="overflow-x-auto rounded-lg border bg-muted/40 px-3 py-2 font-mono text-xs">
+                  {packageInstallCommand}
+                </code>
+                <Button type="button" variant="outline" size="sm" onClick={() => void copyPackageInstall()}>
+                  {copiedInstall ? "Copied" : "Copy install command"}
+                </Button>
+              </div>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <input

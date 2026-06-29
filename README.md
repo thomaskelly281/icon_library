@@ -68,20 +68,15 @@ Install from a local file:
 pnpm add ./path/to/sitecore-icons-0.1.0.tgz
 ```
 
-Or host the `.tgz` somewhere static (S3, GitHub release, or `public/` on your deployed site) and install from that URL:
+Or host the `.tgz` on your deployed site (automatic on Vercel build):
 
 ```bash
-pnpm add https://your-site.example.com/sitecore-icons-0.1.0.tgz
+pnpm add https://icon-library-5y84.vercel.app/sitecore-icons.tgz
 ```
 
-To ship the tarball with your deployed browser, copy it into `public/` before deploy:
+The live browser is at [icon-library-5y84.vercel.app](https://icon-library-5y84.vercel.app/). The root URL is for browsing; installs use the `/sitecore-icons.tgz` path above.
 
-```bash
-pnpm pack:icons
-cp dist-packages/sitecore-icons-*.tgz public/
-```
-
-Then consumers can run `pnpm add https://your-deployed-app.vercel.app/sitecore-icons-0.1.0.tgz`.
+Override the install URL with `NEXT_PUBLIC_PACKAGE_INSTALL_URL` if your domain changes.
 
 ## Use an icon
 
