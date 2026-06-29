@@ -1,0 +1,35 @@
+{
+  "name": "@sitecore/icons",
+  "version": "0.1.0",
+  "description": "Sitecore icon library with flat subpath imports",
+  "license": "MIT",
+  "sideEffects": false,
+  "type": "module",
+  "files": ["dist", "manifest.json"],
+  "exports": {
+    "./*": {
+      "import": "./dist/*.js",
+      "types": "./dist/*.d.ts"
+    },
+    "./icon": {
+      "import": "./dist/icon.js",
+      "types": "./dist/icon.d.ts"
+    }
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "dependencies": {
+    "@mdi/js": "^7.4.47",
+    "@mdi/react": "^1.6.1"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.13",
+    "react": "^19.1.1",
+    "typescript": "^5.9.2"
+  }
+}

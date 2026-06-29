@@ -1,0 +1,9 @@
+node_modules
+.cache
+dist-packages
+.next
+dist
+.turbo
+*.tsbuildinfo
+.DS_Store
+.env*.local
