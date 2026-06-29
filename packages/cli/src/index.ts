@@ -13,15 +13,15 @@ import {
 const program = new Command();
 
 program
-  .name("sitecore-icons")
-  .description("Add and manage Sitecore icons in your project")
+  .name("blok-icons")
+  .description("Add and manage Blok icons in your project")
   .version("0.1.0");
 
 program
   .command("add")
   .description("Add an icon to the current project")
   .argument("<slug>", "Icon slug, e.g. account or sitecore-logo")
-  .option("--from <source>", "Dependency source for @sitecore/icons")
+  .option("--from <source>", "Dependency source for @blok/icons")
   .option("--scaffold", "Create a local re-export file")
   .option(
     "--path <file>",
@@ -47,16 +47,16 @@ program
 
 program
   .command("update")
-  .description("Update @sitecore/icons in the current project")
+  .description("Update @blok/icons in the current project")
   .action(() => {
     const cwd = process.cwd();
     const pm = detectPackageManager(cwd);
     const cmd =
       pm === "pnpm"
-        ? "pnpm update @sitecore/icons"
+        ? "pnpm update @blok/icons"
         : pm === "yarn"
-          ? "yarn upgrade @sitecore/icons"
-          : "npm update @sitecore/icons";
+          ? "yarn upgrade @blok/icons"
+          : "npm update @blok/icons";
 
     execSync(cmd, { cwd, stdio: "inherit" });
   });

@@ -1,7 +1,7 @@
 {
-  "name": "@sitecore/icons",
+  "name": "@blok/icons",
   "version": "0.1.0",
-  "description": "Sitecore icon library with flat subpath imports",
+  "description": "Blok icon library with flat subpath imports",
   "license": "MIT",
   "sideEffects": false,
   "type": "module",

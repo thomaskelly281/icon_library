@@ -2,7 +2,8 @@
 
 import { mdiDownload } from "@mdi/js";
 import { useCallback, useState } from "react";
-import { IconPreview } from "@/app/components/icon-preview";
+
+import { IconPreview } from "@/components/icon-preview";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -38,7 +39,9 @@ export function IconDetailDialog({
       return;
     }
 
-    await navigator.clipboard.writeText(buildUsageSnippet(icon.slug, icon.component));
+    await navigator.clipboard.writeText(
+      buildUsageSnippet(icon.slug, icon.component),
+    );
     setCopied(true);
     window.setTimeout(() => setCopied(false), 2000);
   }, [icon]);
@@ -56,49 +59,52 @@ export function IconDetailDialog({
   }
 
   const importSnippet = buildImportSnippet(icon.slug, icon.component);
+  const usageSnippet = `<${icon.component} size={24} />`;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent size="lg" className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="font-mono">{icon.slug}</DialogTitle>
+      <DialogContent
+        size="lg"
+        className="flex max-h-[calc(100svh-2rem)] flex-col overflow-hidden sm:max-w-lg"
+      >
+        <DialogHeader className="shrink-0">
+          <DialogTitle className="font-mono break-all">{icon.slug}</DialogTitle>
           <DialogDescription>
-            Import as <span className="font-medium text-foreground">{icon.component}</span>
+            Import as{" "}
+            <span className="font-medium text-foreground">{icon.component}</span>
             {" · "}
-            {icon.origin === "svg" ? "Contributed SVG" : "MDI seed"}
+            {icon.origin === "svg" ? "Custom" : "MDI"}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-6">
-          <div className="flex items-center justify-center rounded-xl bg-muted/30 px-8 py-10">
-            <IconPreview path={icon.path} size={64} className="size-16 text-foreground" />
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
+          <div className="flex shrink-0 items-center justify-center rounded-lg bg-muted/30 px-8 py-10">
+            <IconPreview
+              path={icon.path}
+              size={64}
+              className="size-16 shrink-0 text-foreground"
+            />
           </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm font-medium">Import</p>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                colorScheme="neutral"
-                onClick={handleCopy}
-              >
-                {copied ? "Copied" : "Copy snippet"}
-              </Button>
-            </div>
-            <pre className="overflow-x-auto rounded-lg bg-muted/40 p-4 font-mono text-xs leading-relaxed text-foreground">
-              <code>{importSnippet}</code>
-              {"\n\n"}
-              <code>{`<${icon.component} size={24} />`}</code>
-            </pre>
-          </div>
+          <pre className="min-w-0 overflow-x-auto rounded-lg bg-muted/40 p-4 font-mono text-xs leading-relaxed text-foreground">
+            <code className="block whitespace-pre">{importSnippet}</code>
+            {"\n"}
+            <code className="block whitespace-pre">{usageSnippet}</code>
+          </pre>
         </div>
 
-        <DialogFooter>
-          <Button type="button" onClick={handleDownload} className="w-full sm:w-auto">
+        <DialogFooter className="shrink-0">
+          <Button
+            type="button"
+            variant="outline"
+            colorScheme="neutral"
+            onClick={() => void handleCopy()}
+          >
+            {copied ? "Copied" : "Copy snippet"}
+          </Button>
+          <Button type="button" onClick={handleDownload}>
             <Icon path={mdiDownload} />
-            Download SVG
+            Download as SVG
           </Button>
         </DialogFooter>
       </DialogContent>

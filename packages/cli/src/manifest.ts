@@ -8,7 +8,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export function findManifestPath(startDir = process.cwd()): string | null {
   const candidates = [
-    join(startDir, "node_modules", "@sitecore", "icons", "manifest.json"),
+    join(startDir, "node_modules", "@blok", "icons", "manifest.json"),
     join(startDir, "icons", "manifest.json"),
     join(__dirname, "..", "manifest.json"),
     join(__dirname, "..", "..", "..", "icons", "manifest.json"),
@@ -27,7 +27,7 @@ export function loadManifest(cwd = process.cwd()): IconManifest {
   const manifestPath = findManifestPath(cwd);
   if (!manifestPath) {
     throw new Error(
-      "Could not find icon manifest. Install @sitecore/icons or run from the Sitecore Icons workspace.",
+      "Could not find icon manifest. Install @blok/icons or run from the Blok Icons workspace.",
     );
   }
 
@@ -50,7 +50,7 @@ export function detectPackageManager(cwd: string): "pnpm" | "npm" | "yarn" {
 
 export function ensureIconsDependency(
   cwd: string,
-  from = "@sitecore/icons",
+  from = "@blok/icons",
 ): void {
   const packageJsonPath = join(cwd, "package.json");
   if (!existsSync(packageJsonPath)) {
@@ -62,7 +62,7 @@ export function ensureIconsDependency(
     devDependencies?: Record<string, string>;
   };
 
-  if (pkg.dependencies?.["@sitecore/icons"] || pkg.devDependencies?.["@sitecore/icons"]) {
+  if (pkg.dependencies?.["@blok/icons"] || pkg.devDependencies?.["@blok/icons"]) {
     return;
   }
 
@@ -87,7 +87,7 @@ export function scaffoldReExport(
     outputPath ?? join(cwd, "components", "icons", `${slug}.tsx`);
   mkdirSync(dirname(target), { recursive: true });
 
-  const content = `export { ${component} } from "@sitecore/icons/${slug}";
+  const content = `export { ${component} } from "@blok/icons/${slug}";
 `;
 
   writeFileSync(target, content, "utf8");
@@ -95,5 +95,5 @@ export function scaffoldReExport(
 }
 
 export function buildImportStatement(slug: string, component: string): string {
-  return `import { ${component} } from "@sitecore/icons/${slug}";`;
+  return `import { ${component} } from "@blok/icons/${slug}";`;
 }

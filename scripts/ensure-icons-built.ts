@@ -14,12 +14,12 @@ function ensureIconsBuilt(): void {
   generateIcons();
 
   if (!needsIconsBuild()) {
-    console.log("Skipped @sitecore/icons build (up to date)");
+    console.log("Skipped @blok/icons build (up to date)");
     return;
   }
 
-  console.log("Building @sitecore/icons...");
-  execSync("pnpm --filter @sitecore/icons build", {
+  console.log("Building @blok/icons...");
+  execSync("pnpm --filter @blok/icons build", {
     cwd: ROOT,
     stdio: "inherit",
   });
